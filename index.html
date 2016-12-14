@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./three.js"></script>
+
+
+<script type="x-shader/x-vertex" id="vertexShader">  
+uniform vec3 camPos;
+varying vec3 refDir;
+
+void main()
+{
+   vec4 pos = modelMatrix*vec4(position, 1.0);
+
+   vec3 vWorldNormal = normalize(mat3(modelMatrix[0].xyz,modelMatrix[1].xyz,modelMatrix[2].xyz)*normal);
+   
+   
+  
+   vec3 eye = normalize(pos.xyz - camPos.xyz);
+   
+   
+   refDir = reflect(eye, vWorldNormal);
+   //refDir = normalize(eye - 2.0*dot(eye, vWorldNormal)*vWorldNormal);
+   
+   vec4 mvPosition = modelViewMatrix * vec4(position.xyz, 1.0);
+	gl_Position = projectionMatrix * mvPosition;
+}
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentShader">  
+
+uniform samplerCube tCube;
+
+varying vec3 refDir;
+
+void main( void ) {
+
+   
+	vec4 texel = textureCube(tCube,refDir);;
+	gl_FragColor = vec4(texel.rgb, 1.0);
+   
+
+}
+
+</script>  
+
+</head>
+
+<body>
+    <script src="./main.js"></script>
+</body>
+</html>
